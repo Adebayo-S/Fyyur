@@ -233,22 +233,24 @@ def create_venue_form():
 
 @app.route('/venues/create', methods=['POST'])
 def create_venue_submission():
-  #request.form[] used instead of request.form.get()
-  # so it can throw an error if the form is not filled out
+  form = VenueForm(request.form)
+
   try:
     venue = Venue(
-      name=request.form['name'],
-      city=request.form['city'],
-      state=request.form['state'],
-      address=request.form['address'],
-      phone=request.form['phone'],
-      genres=request.form.getlist('genres'),
-      facebook_link=request.form['facebook_link'],
-      image_link=request.form['image_link'],
-      website_link = request.form['website_link'],
-      seeking_talent = request.form['seeking_talent'],
-      seeking_description = request.form['seeking_description']
+      name = form.name.data,
+      city = form.city.data,
+      state = form.state.data,
+      address = form.address.data,
+      phone = form.phone.data,
+      genres = form.genres.data,
+      facebook_link = form.facebook_link.data,
+      image_link = form.image_link.data,
+      website = form.website.data,
+      seeking_talent = form.seeking_talent.data,
+      seeking_description = form.seeking_description.data
     )
+    # venue = Venue()
+    # form.populate_obj(venue)
     db.session.add(venue)
     db.session.commit()
     # on successful db insert, flash success
