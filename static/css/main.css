@@ -209,3 +209,6 @@ h2.monospace {
 .subtitle {
   opacity: 0.5;
 }
+.ml-5 {
+  margin-left: 20px;
+}

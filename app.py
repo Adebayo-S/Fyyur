@@ -5,7 +5,7 @@
 import json
 import dateutil.parser
 import babel
-from flask import Flask, render_template, request, Response, flash, redirect, url_for
+from flask import Flask, render_template, request, Response, flash, redirect, url_for, abort
 from flask_moment import Moment
 from flask_sqlalchemy import SQLAlchemy
 import logging
@@ -158,21 +158,8 @@ def create_venue_submission():
   form = VenueForm(request.form)
 
   try:
-    venue = Venue(
-      name = form.name.data,
-      city = form.city.data,
-      state = form.state.data,
-      address = form.address.data,
-      phone = form.phone.data,
-      genres = form.genres.data,
-      facebook_link = form.facebook_link.data,
-      image_link = form.image_link.data,
-      website = form.website.data,
-      seeking_talent = form.seeking_talent.data,
-      seeking_description = form.seeking_description.data
-    )
-    # venue = Venue()
-    # form.populate_obj(venue)
+    venue = Venue()
+    form.populate_obj(venue)
     db.session.add(venue)
     db.session.commit()
     # on successful db insert, flash success
@@ -185,14 +172,25 @@ def create_venue_submission():
 
   return render_template('pages/home.html')
 
-@app.route('/venues/<venue_id>', methods=['DELETE'])
+@app.route('/venues/<int:venue_id>/delete', methods=['GET'])
 def delete_venue(venue_id):
-  # TODO: Complete this endpoint for taking a venue_id, and using
-  # SQLAlchemy ORM to delete a record. Handle cases where the session commit could fail.0
+  error = False
 
-  # BONUS CHALLENGE: Implement a button to delete a Venue on a Venue Page, have it so that
-  # clicking that button delete it from the db then redirect the user to the homepage
-  return None
+  try:
+    db.session.delete(Venue.query.get(venue_id))
+    db.session.commit()
+    flash('Venue deleted successfully!')
+  except:
+    error = True
+    db.session.rollback()
+    flash('Error occurred: Venue could not be deleted.')
+  finally:
+    db.session.close()
+
+  if (error):
+    abort(500)
+  else:
+    return redirect("/venues")
 
 #  Artists
 #  ----------------------------------------------------------------
