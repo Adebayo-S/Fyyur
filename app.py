@@ -1,30 +1,5 @@
-#----------------------------------------------------------------------------#
-# Imports
-#----------------------------------------------------------------------------#
-
-import dateutil.parser
-import babel
-from flask import Flask, render_template, request, Response, flash, redirect, url_for, abort
-from flask_moment import Moment
-from flask_sqlalchemy import SQLAlchemy
-import logging
-from logging import Formatter, FileHandler
-from flask_wtf import Form
-from forms import *
-from flask_migrate import Migrate
+from config import *
 from models import *
-
-#----------------------------------------------------------------------------#
-# App Config.
-#----------------------------------------------------------------------------#
-
-app = Flask(__name__)
-moment = Moment(app)
-app.config.from_object('config')
-db = SQLAlchemy(app)
-migrate = Migrate(app, db)
-
-# TODO Implement Show and Artist models, and complete all model relationships and properties, as a database migration.
 
 #----------------------------------------------------------------------------#
 # Filters.
@@ -89,6 +64,7 @@ def search_venues():
 def show_venue(venue_id):
   # shows the venue page with the given venue_id
   data = db.session.query(Venue).filter_by(id=venue_id).first()
+  # show = db.session.query()
   return render_template('pages/show_venue.html', venue=data)
 
 #  Create Venue
@@ -118,25 +94,35 @@ def create_venue_submission():
 
   return render_template('pages/home.html')
 
-@app.route('/venues/<int:venue_id>/delete', methods=['GET'])
+@app.route('/venues/<int:venue_id>', methods=['DELETE'])
 def delete_venue(venue_id):
   error = False
+  venue = Venue.query.get(venue_id)
+
+  if venue is None:
+    return abort(400)
 
   try:
-    db.session.delete(Venue.query.get(venue_id))
+    db.session.delete(venue)
     db.session.commit()
     flash('Venue deleted successfully!')
   except:
     error = True
     db.session.rollback()
+    print(sys.exc_info())
     flash('Error occurred: Venue could not be deleted.')
   finally:
     db.session.close()
 
-  if (error):
-    abort(500)
-  else:
-    return redirect("/venues")
+  return jsonify({
+    'message': 'Delete Successful'
+  })
+  # if (error):
+  #   abort(500)
+  # else:
+  #   return jsonify({
+  #     'message': 'Delete Successful'
+  #   })
 
 #  Artists
 #  ----------------------------------------------------------------
