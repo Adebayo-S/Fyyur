@@ -63,8 +63,26 @@ def search_venues():
 @app.route('/venues/<int:venue_id>')
 def show_venue(venue_id):
   # shows the venue page with the given venue_id
-  data = db.session.query(Venue).filter_by(id=venue_id).first()
-  # show = db.session.query()
+  venue = db.session.query(Venue).filter(Venue.id == venue_id).first()
+  data = venue.__dict__
+
+  shows = db.session.query(Show).filter_by(venue_id=venue_id)
+  past_shows = shows.filter(Show.start_time < datetime.now()).all()
+  upcoming_shows = shows.filter(Show.start_time >= datetime.now()).all()
+  past_shows_count = len(past_shows)
+  upcoming_shows_count = len(upcoming_shows)
+
+  for show in upcoming_shows:
+      show.start_time = show.start_time.strftime('%d-%m-%Y %H:%M')
+
+  for show in past_shows:
+      show.start_time = show.start_time.strftime('%d-%m-%Y %H:%M')
+
+  data["past_shows"] = past_shows
+  data["past_shows_count"] = past_shows_count
+  data["upcoming_shows"] = upcoming_shows
+  data["upcoming_shows_count"] = upcoming_shows_count
+
   return render_template('pages/show_venue.html', venue=data)
 
 #  Create Venue
@@ -114,15 +132,12 @@ def delete_venue(venue_id):
   finally:
     db.session.close()
 
-  return jsonify({
-    'message': 'Delete Successful'
-  })
-  # if (error):
-  #   abort(500)
-  # else:
-  #   return jsonify({
-  #     'message': 'Delete Successful'
-  #   })
+  if (error):
+    abort(500)
+  else:
+    return jsonify({
+      'message': 'Delete Successful'
+    })
 
 #  Artists
 #  ----------------------------------------------------------------
@@ -146,8 +161,28 @@ def search_artists():
 
 @app.route('/artists/<int:artist_id>')
 def show_artist(artist_id):
-  artist = db.session.query(Artist).filter_by(id=artist_id).first()
-  return render_template('pages/show_artist.html', artist=artist)
+  # shows the artist page with the given artist_id
+  artist = db.session.query(Artist).filter(Artist.id == artist_id).first()
+  data = artist.__dict__
+
+  shows = db.session.query(Show).filter_by(artist_id=artist_id)
+  past_shows = shows.filter(Show.start_time < datetime.now()).all()
+  upcoming_shows = shows.filter(Show.start_time >= datetime.now()).all()
+  past_shows_count = len(past_shows)
+  upcoming_shows_count = len(upcoming_shows)
+
+  for show in upcoming_shows:
+      show.start_time = show.start_time.strftime('%d-%m-%Y %H:%M')
+
+  for show in past_shows:
+      show.start_time = show.start_time.strftime('%d-%m-%Y %H:%M')
+
+  data["past_shows"] = past_shows
+  data["past_shows_count"] = past_shows_count
+  data["upcoming_shows"] = upcoming_shows
+  data["upcoming_shows_count"] = upcoming_shows_count
+
+  return render_template('pages/show_artist.html', artist=data)
 
 #  Update
 #  ----------------------------------------------------------------
