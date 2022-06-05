@@ -1,0 +1,9 @@
+{
+    "python.linting.pycodestyleEnabled": true,
+    "python.linting.enabled": false
+}
+"[python]": {
+    "editor.detectIndentation" : false,
+    "editor.insertSpaces": true,
+    "editor.tabSize": 4
+}
