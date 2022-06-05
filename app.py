@@ -29,12 +29,13 @@ def index():
 
 @app.route('/venues')
 def venues():
-  # DONE: Venues updated with retrieved data
   data = []
   cities = db.session.query(Venue.city, Venue.state).distinct()
 
   for city in cities:
-    venues = db.session.query(Venue).filter_by(city=city.city, state=city.state).all()
+    venues = db.session.query(Venue).filter_by(
+      city=city.city, state=city.state).all()
+
     for venue in venues:
       data.append({
         "city": city.city,
@@ -42,7 +43,8 @@ def venues():
         "venues": [{
           "id": venue.id,
           "name": venue.name,
-          "num_upcoming_shows": db.session.query(Show).filter_by(venue_id=venue.id).count()
+          "num_upcoming_shows": db.session.query(Show).filter_by(
+            venue_id=venue.id).count()
         }]
       })
 
@@ -102,7 +104,6 @@ def create_venue_submission():
     form.populate_obj(venue)
     db.session.add(venue)
     db.session.commit()
-    # on successful db insert, flash success
     flash('Venue ' + request.form['name'] + ' was successfully listed!')
   except:
     db.session.rollback()
@@ -200,7 +201,6 @@ def edit_artist_submission(artist_id):
   try:
     form.populate_obj(artist)
     db.session.commit()
-    # on successful db insert, flash success
     flash('Artist ' + request.form['name'] + ' was successfully listed!')
   except:
     db.session.rollback()
@@ -224,7 +224,6 @@ def edit_venue_submission(venue_id):
   try:
     form.populate_obj(venue)
     db.session.commit()
-    # on successful db insert, flash success
     flash('Venue ' + request.form['name'] + ' was successfully listed!')
   except:
     db.session.rollback()
@@ -250,7 +249,6 @@ def create_artist_submission():
     form.populate_obj(artists)
     db.session.add(artists)
     db.session.commit()
-    # on successful db insert, flash success
     flash('Artist ' + request.form['name'] + ' was successfully listed!')
   except:
     db.session.rollback()
@@ -266,8 +264,6 @@ def create_artist_submission():
 
 @app.route('/shows')
 def shows():
-  # displays list of shows at /shows
-  # TODO: replace with real venues data.
   data = []
   shows = db.session.query(Show).all()
 
@@ -287,7 +283,6 @@ def shows():
 
 @app.route('/shows/create')
 def create_shows():
-  # renders form. do not touch.
   form = ShowForm()
   return render_template('forms/new_show.html', form=form)
 
@@ -299,7 +294,6 @@ def create_show_submission():
     form.populate_obj(show)
     db.session.add(show)
     db.session.commit()
-    # on successful db insert, flash success
     flash('Show was successfully listed!')
   except:
     db.session.rollback()
