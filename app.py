@@ -64,7 +64,9 @@ def search_venues():
         "data": venue_found
     }
 
-    return render_template('pages/search_venues.html', results=response, search_term=request.form.get('search_term', ''))
+    return render_template(
+        'pages/search_venues.html', results=response, search_term=request.form.get(
+            'search_term', ''))
 
 
 @app.route('/venues/<int:venue_id>')
@@ -170,7 +172,9 @@ def search_artists():
         "data": artist_found
     }
 
-    return render_template('pages/search_artists.html', results=response, search_term=request.form.get('search_term', ''))
+    return render_template(
+        'pages/search_artists.html', results=response, search_term=request.form.get(
+            'search_term', ''))
 
 
 @app.route('/artists/<int:artist_id>')
