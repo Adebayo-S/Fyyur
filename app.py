@@ -75,7 +75,8 @@ def show_venue(venue_id):
     venue = db.session.query(Venue).filter(Venue.id == venue_id).first()
     data = venue.__dict__
 
-    shows = db.session.query(Show).filter_by(venue_id=venue_id)
+    shows = db.session.query(Show).join(
+        Venue).filter_by(id=venue_id)
     past_shows = shows.filter(Show.start_time < datetime.now()).all()
     upcoming_shows = shows.filter(Show.start_time >= datetime.now()).all()
     past_shows_count = len(past_shows)
@@ -183,7 +184,8 @@ def show_artist(artist_id):
     artist = db.session.query(Artist).filter(Artist.id == artist_id).first()
     data = artist.__dict__
 
-    shows = db.session.query(Show).filter_by(artist_id=artist_id)
+    shows = db.session.query(Show).join(
+        Artist).filter_by(id=artist_id)
     past_shows = shows.filter(Show.start_time < datetime.now()).all()
     upcoming_shows = shows.filter(Show.start_time >= datetime.now()).all()
     past_shows_count = len(past_shows)
